@@ -437,107 +437,198 @@
       margin-left: 0.3rem;
     }
 
-    /* ── EXPERIENCE ── */
+    /* ── EXPERIENCE ROADMAP ── */
     #experience { padding: 100px 0; }
 
-    .timeline {
+    .roadmap {
       position: relative;
-      padding-left: 2rem;
+      padding: 2rem 0;
     }
 
-    .timeline::before {
-      content: '';
+    /* The SVG road drawn by JS */
+    .roadmap-svg {
       position: absolute;
-      left: 0;
-      top: 8px;
-      bottom: 8px;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--indigo), var(--purple), var(--cyan), transparent);
-      border-radius: 2px;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .timeline-item {
+    .roadmap-stops {
       position: relative;
-      margin-bottom: 2rem;
-      padding-left: 1.75rem;
-    }
-
-    .timeline-dot {
-      position: absolute;
-      left: -2.45rem;
-      top: 1.5rem;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--indigo);
-      border: 2px solid var(--bg);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
-      transition: box-shadow 0.3s;
-    }
-
-    .timeline-item:first-child .timeline-dot {
-      background: var(--green);
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.3);
-      animation: pulse-dot 2s infinite;
-    }
-
-    .timeline-card { padding: 1.75rem; }
-
-    .timeline-header {
+      z-index: 1;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.35rem;
+      flex-direction: column;
+      gap: 0;
     }
 
-    .timeline-company {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .timeline-period {
-      font-size: 0.78rem;
-      background: rgba(99,102,241,0.12);
-      color: #a5b4fc;
-      padding: 0.2rem 0.7rem;
-      border-radius: 100px;
-      border: 1px solid rgba(99,102,241,0.25);
-      white-space: nowrap;
-    }
-
-    .timeline-role {
-      font-size: 0.85rem;
-      color: var(--cyan);
-      font-weight: 600;
+    .roadmap-stop {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      align-items: center;
+      min-height: 220px;
       margin-bottom: 1rem;
     }
 
-    .timeline-bullets {
-      list-style: none;
+    /* odd stops: card left, pin center, empty right */
+    .roadmap-stop.left  .stop-card  { grid-column: 1; grid-row: 1; }
+    .roadmap-stop.left  .stop-pin   { grid-column: 2; grid-row: 1; }
+    .roadmap-stop.left  .stop-empty { grid-column: 3; grid-row: 1; }
+
+    /* even stops: empty left, pin center, card right */
+    .roadmap-stop.right .stop-empty { grid-column: 1; grid-row: 1; }
+    .roadmap-stop.right .stop-pin   { grid-column: 2; grid-row: 1; }
+    .roadmap-stop.right .stop-card  { grid-column: 3; grid-row: 1; }
+
+    .stop-pin {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .timeline-bullets li {
-      font-size: 0.875rem;
-      color: var(--muted);
-      line-height: 1.65;
-      padding-left: 1.1rem;
+      align-items: center;
+      gap: 0;
       position: relative;
     }
 
-    .timeline-bullets li::before {
+    .pin-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--bg2);
+      border: 3px solid var(--indigo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      z-index: 2;
+      position: relative;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .roadmap-stop:first-child .pin-icon {
+      border-color: var(--green);
+      background: rgba(16,185,129,0.12);
+      box-shadow: 0 0 0 6px rgba(16,185,129,0.15), 0 0 25px rgba(16,185,129,0.3);
+      animation: glow-green 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow-green {
+      from { box-shadow: 0 0 0 6px rgba(16,185,129,0.15), 0 0 20px rgba(16,185,129,0.2); }
+      to   { box-shadow: 0 0 0 10px rgba(16,185,129,0.08), 0 0 35px rgba(16,185,129,0.4); }
+    }
+
+    .roadmap-stop:hover .pin-icon { transform: scale(1.15); }
+
+    .pin-year {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-top: 0.4rem;
+      text-align: center;
+    }
+
+    .stop-card {
+      padding: 0 0.75rem;
+    }
+
+    .stop-card-inner {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      backdrop-filter: blur(20px);
+      padding: 1.5rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+
+    .stop-card-inner:hover {
+      border-color: rgba(99,102,241,0.45);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(99,102,241,0.13);
+    }
+
+    .roadmap-stop:first-child .stop-card-inner {
+      border-color: rgba(16,185,129,0.3);
+    }
+
+    .roadmap-stop:first-child .stop-card-inner:hover {
+      border-color: rgba(16,185,129,0.6);
+      box-shadow: 0 20px 50px rgba(16,185,129,0.12);
+    }
+
+    .stop-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .stop-company {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .stop-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stop-role {
+      font-size: 0.78rem;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .stop-period {
+      font-size: 0.7rem;
+      background: rgba(99,102,241,0.1);
+      color: #a5b4fc;
+      padding: 0.15rem 0.6rem;
+      border-radius: 100px;
+      border: 1px solid rgba(99,102,241,0.22);
+    }
+
+    .stop-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .stop-bullets li {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .stop-bullets li::before {
       content: '▸';
       position: absolute;
       left: 0;
       color: var(--indigo);
-      font-size: 0.7rem;
-      top: 0.15rem;
+      font-size: 0.65rem;
+      top: 0.18rem;
     }
+
+    .stop-env {
+      margin-top: 0.9rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,0.03);
+      padding: 0.45rem 0.7rem;
+      border-radius: 7px;
+      border-left: 2px solid var(--indigo);
+      line-height: 1.5;
+    }
+
+    .stop-env strong { color: var(--indigo); }
 
     .env-line {
       margin-top: 1rem;
@@ -551,6 +642,63 @@
     }
 
     .env-line strong { color: var(--indigo); }
+
+    /* Start flag */
+    .roadmap-start {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .roadmap-start-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #6ee7b7;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* End flag */
+    .roadmap-end {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .roadmap-end-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* Mobile: stack everything */
+    @media (max-width: 768px) {
+      .roadmap-stop {
+        grid-template-columns: 40px 1fr;
+        grid-template-rows: auto;
+        min-height: unset;
+        margin-bottom: 1.5rem;
+      }
+      .roadmap-stop.left .stop-pin,
+      .roadmap-stop.right .stop-pin  { grid-column: 1; grid-row: 1; }
+      .roadmap-stop.left .stop-card,
+      .roadmap-stop.right .stop-card { grid-column: 2; grid-row: 1; }
+      .roadmap-stop.left .stop-empty,
+      .roadmap-stop.right .stop-empty { display: none; }
+      .pin-icon { width: 36px; height: 36px; font-size: 1rem; }
+      .roadmap-svg { display: none; }
+    }
 
     /* ── COURSES ── */
     #learning { padding: 100px 0; }
@@ -1073,107 +1221,163 @@
   </div>
 </section>
 
-<!-- EXPERIENCE -->
+<!-- EXPERIENCE ROADMAP -->
 <section id="experience">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-tag">Experience</div>
-      <h2 class="section-title">Where I've Worked</h2>
-      <p class="section-sub">12+ years across startups and product companies, always growing.</p>
+      <div class="section-tag">Career Journey</div>
+      <h2 class="section-title">My Road So Far</h2>
+      <p class="section-sub">12 years, 5 companies, one clear direction — always moving forward.</p>
     </div>
-    <div class="timeline reveal">
 
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="glass-card timeline-card">
-          <div class="timeline-header">
-            <div class="timeline-company">VThink Global Technologies PVT LTD</div>
-            <span class="timeline-period">Aug 2025 – Present · 10 months</span>
-          </div>
-          <div class="timeline-role">Lead Professional</div>
-          <ul class="timeline-bullets">
-            <li>Leading a US-based Yii CRM enhancement project as both developer and team lead.</li>
-            <li>Managing a team of 2 developers: code reviews, task planning, sprint updates, and technical guidance.</li>
-            <li>Working closely with PM for estimation, technical discussions, client clarifications, and release planning.</li>
-            <li>Ensuring clean, maintainable code and stable delivery for production releases.</li>
-            <li>Leveraging AI-powered developer tools including Codex, Cursor, Claude Code, and n8n to boost development efficiency and workflow automation.</li>
-            <li>Conducting thorough code reviews to enforce quality standards and promote best practices.</li>
-            <li>Performing monthly bug analysis and preparing detailed reports for clients and management.</li>
-            <li>Supporting the QA team in developing and maintaining automation test cases.</li>
-          </ul>
-          <div class="env-line"><strong>Stack:</strong> Yii, PHP, MySQL, jQuery, JavaScript, REST APIs, Git, Agile/Scrum, Codex, Cursor, Claude Code, n8n</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="glass-card timeline-card">
-          <div class="timeline-header">
-            <div class="timeline-company">Valueleaf Services PVT LTD</div>
-            <span class="timeline-period">July 2023 – June 2025 · 2 years</span>
-          </div>
-          <div class="timeline-role">Tech Lead</div>
-          <ul class="timeline-bullets">
-            <li>Led end-to-end product development using PHP, MySQL, and REST APIs.</li>
-            <li>Managed team tasks, reviewed code, set coding standards, and guided sprint execution.</li>
-            <li>Built and optimized scalable API workflows for LSP integrations.</li>
-            <li>Implemented CI/CD using AWS CodePipeline &amp; CodeDeploy.</li>
-          </ul>
-          <div class="env-line"><strong>Stack:</strong> Core PHP, MySQL, REST API, AWS, CI/CD, Agile/Scrum, LSP API</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="glass-card timeline-card">
-          <div class="timeline-header">
-            <div class="timeline-company">Dreamguys Technologies PVT LTD</div>
-            <span class="timeline-period">Jan 2021 – June 2023 · 2.5 years</span>
-          </div>
-          <div class="timeline-role">Sr. Web Developer</div>
-          <ul class="timeline-bullets">
-            <li>Developed and delivered complex applications using CodeIgniter &amp; MySQL.</li>
-            <li>Built REST APIs for payment gateways, SMS, marketing tools, etc.</li>
-            <li>Gathered client requirements, proposed solutions, and improved architecture.</li>
-          </ul>
-          <div class="env-line"><strong>Stack:</strong> PHP, CodeIgniter, MySQL, jQuery, Ajax, RESTful APIs, Git</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="glass-card timeline-card">
-          <div class="timeline-header">
-            <div class="timeline-company">Beeyondzero Software Solutions</div>
-            <span class="timeline-period">June 2016 – Jan 2021 · 4.5 years</span>
-          </div>
-          <div class="timeline-role">Sr. Web Developer</div>
-          <ul class="timeline-bullets">
-            <li>Led small project teams and delivered dashboards, login systems, and reporting modules.</li>
-            <li>Built REST APIs for AngularJS frontends and optimised MySQL for large data operations.</li>
-          </ul>
-          <div class="env-line"><strong>Stack:</strong> PHP, CodeIgniter, AngularJS, MySQL, REST API, Apache</div>
-        </div>
-      </div>
-
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="glass-card timeline-card">
-          <div class="timeline-header">
-            <div class="timeline-company">i2 Software Tech Solutions PVT LTD</div>
-            <span class="timeline-period">July 2014 – June 2016 · 2 years</span>
-          </div>
-          <div class="timeline-role">Web Developer</div>
-          <ul class="timeline-bullets">
-            <li>Built PHP-based portals for e-commerce and travel.</li>
-            <li>Integrated APIs — Redbus, Bajaj Allianz, SMS.</li>
-            <li>Built AJAX-driven forms to reduce page reloads and improve UI responsiveness.</li>
-          </ul>
-          <div class="env-line"><strong>Stack:</strong> PHP, OpenCart, CodeIgniter, MySQL, HTML5, jQuery, Ajax, Bootstrap</div>
-        </div>
-      </div>
-
+    <div class="roadmap-start reveal">
+      <div class="roadmap-start-badge">🟢 Currently Here — VThink Global Technologies</div>
     </div>
+
+    <div class="roadmap reveal">
+      <svg class="roadmap-svg" id="roadmap-svg"></svg>
+      <div class="roadmap-stops" id="roadmap-stops">
+
+        <!-- STOP 1 — Current -->
+        <div class="roadmap-stop left" data-stop="0">
+          <div class="stop-card">
+            <div class="stop-card-inner">
+              <div class="stop-header">
+                <div class="stop-company">VThink Global Technologies PVT LTD</div>
+                <div class="stop-meta">
+                  <span class="stop-role">Lead Professional</span>
+                  <span class="stop-period">Aug 2025 – Present · 10 months</span>
+                </div>
+              </div>
+              <ul class="stop-bullets">
+                <li>Leading a US-based Yii CRM project as both developer and team lead.</li>
+                <li>Managing 2 developers — code reviews, task planning, sprint updates.</li>
+                <li>AI-powered workflow using Codex, Cursor, Claude Code &amp; n8n.</li>
+                <li>Monthly bug analysis and detailed client/management reporting.</li>
+                <li>Supporting QA team in automation test case development.</li>
+              </ul>
+              <div class="stop-env"><strong>Stack:</strong> Yii, PHP, MySQL, jQuery, JS, REST APIs, Git, Claude Code, n8n</div>
+            </div>
+          </div>
+          <div class="stop-pin">
+            <div class="pin-icon">🏢</div>
+            <div class="pin-year">2025</div>
+          </div>
+          <div class="stop-empty"></div>
+        </div>
+
+        <!-- STOP 2 -->
+        <div class="roadmap-stop right" data-stop="1">
+          <div class="stop-empty"></div>
+          <div class="stop-pin">
+            <div class="pin-icon">🚀</div>
+            <div class="pin-year">2023</div>
+          </div>
+          <div class="stop-card">
+            <div class="stop-card-inner">
+              <div class="stop-header">
+                <div class="stop-company">Valueleaf Services PVT LTD</div>
+                <div class="stop-meta">
+                  <span class="stop-role">Tech Lead</span>
+                  <span class="stop-period">July 2023 – June 2025 · 2 years</span>
+                </div>
+              </div>
+              <ul class="stop-bullets">
+                <li>Led end-to-end product development using PHP, MySQL &amp; REST APIs.</li>
+                <li>Managed team tasks, set coding standards, guided sprint execution.</li>
+                <li>Built scalable API workflows for LSP integrations.</li>
+                <li>Implemented CI/CD using AWS CodePipeline &amp; CodeDeploy.</li>
+              </ul>
+              <div class="stop-env"><strong>Stack:</strong> Core PHP, MySQL, REST API, AWS, CI/CD, Agile/Scrum</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STOP 3 -->
+        <div class="roadmap-stop left" data-stop="2">
+          <div class="stop-card">
+            <div class="stop-card-inner">
+              <div class="stop-header">
+                <div class="stop-company">Dreamguys Technologies PVT LTD</div>
+                <div class="stop-meta">
+                  <span class="stop-role">Sr. Web Developer</span>
+                  <span class="stop-period">Jan 2021 – June 2023 · 2.5 years</span>
+                </div>
+              </div>
+              <ul class="stop-bullets">
+                <li>Built complex applications using CodeIgniter &amp; MySQL.</li>
+                <li>Created REST APIs for payment gateways, SMS &amp; marketing tools.</li>
+                <li>Gathered client requirements and improved system architecture.</li>
+              </ul>
+              <div class="stop-env"><strong>Stack:</strong> PHP, CodeIgniter, MySQL, jQuery, Ajax, RESTful APIs, Git</div>
+            </div>
+          </div>
+          <div class="stop-pin">
+            <div class="pin-icon">⚙️</div>
+            <div class="pin-year">2021</div>
+          </div>
+          <div class="stop-empty"></div>
+        </div>
+
+        <!-- STOP 4 -->
+        <div class="roadmap-stop right" data-stop="3">
+          <div class="stop-empty"></div>
+          <div class="stop-pin">
+            <div class="pin-icon">💡</div>
+            <div class="pin-year">2016</div>
+          </div>
+          <div class="stop-card">
+            <div class="stop-card-inner">
+              <div class="stop-header">
+                <div class="stop-company">Beeyondzero Software Solutions</div>
+                <div class="stop-meta">
+                  <span class="stop-role">Sr. Web Developer</span>
+                  <span class="stop-period">June 2016 – Jan 2021 · 4.5 years</span>
+                </div>
+              </div>
+              <ul class="stop-bullets">
+                <li>Led small project teams delivering dashboards and reporting modules.</li>
+                <li>Built REST APIs for AngularJS frontends.</li>
+                <li>Optimised MySQL queries for large-scale data operations.</li>
+              </ul>
+              <div class="stop-env"><strong>Stack:</strong> PHP, CodeIgniter, AngularJS, MySQL, REST API, Apache</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STOP 5 — Start -->
+        <div class="roadmap-stop left" data-stop="4">
+          <div class="stop-card">
+            <div class="stop-card-inner">
+              <div class="stop-header">
+                <div class="stop-company">i2 Software Tech Solutions PVT LTD</div>
+                <div class="stop-meta">
+                  <span class="stop-role">Web Developer</span>
+                  <span class="stop-period">July 2014 – June 2016 · 2 years</span>
+                </div>
+              </div>
+              <ul class="stop-bullets">
+                <li>Built PHP portals for e-commerce and travel domains.</li>
+                <li>Integrated Redbus, Bajaj Allianz &amp; SMS APIs.</li>
+                <li>Built AJAX-driven forms to improve UI responsiveness.</li>
+              </ul>
+              <div class="stop-env"><strong>Stack:</strong> PHP, OpenCart, CodeIgniter, MySQL, HTML5, jQuery, Bootstrap</div>
+            </div>
+          </div>
+          <div class="stop-pin">
+            <div class="pin-icon">🌱</div>
+            <div class="pin-year">2014</div>
+          </div>
+          <div class="stop-empty"></div>
+        </div>
+
+      </div><!-- /roadmap-stops -->
+    </div><!-- /roadmap -->
+
+    <div class="roadmap-end reveal">
+      <div class="roadmap-end-badge">🏁 Journey started · July 2014</div>
+    </div>
+
   </div>
 </section>
 
@@ -1394,6 +1598,70 @@
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── ROADMAP SVG ROAD ──
+  function drawRoad() {
+    const svg = document.getElementById('roadmap-svg');
+    const stops = document.querySelectorAll('.roadmap-stop');
+    if (!svg || stops.length === 0) return;
+
+    const svgRect = svg.parentElement.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${svgRect.width} ${svgRect.height}`);
+
+    // Collect pin center positions relative to roadmap container
+    const points = [];
+    stops.forEach(stop => {
+      const pin = stop.querySelector('.pin-icon');
+      if (!pin) return;
+      const pr = pin.getBoundingClientRect();
+      const sr = svg.parentElement.getBoundingClientRect();
+      const x = pr.left + pr.width / 2 - sr.left;
+      const y = pr.top + pr.height / 2 - sr.top;
+      points.push({ x, y });
+    });
+
+    if (points.length < 2) return;
+
+    // Build smooth SVG path through all pin points
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i], p2 = points[i + 1];
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+      // cubic bezier curving outward
+      const cx1 = p1.x + (p2.x - p1.x) * 0.15;
+      const cy1 = p1.y + (p2.y - p1.y) * 0.5;
+      const cx2 = p2.x - (p2.x - p1.x) * 0.15;
+      const cy2 = p2.y - (p2.y - p1.y) * 0.5;
+      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`;
+    }
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="road-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#10b981" stop-opacity="0.9"/>
+          <stop offset="30%"  stop-color="#6366f1" stop-opacity="0.8"/>
+          <stop offset="70%"  stop-color="#a855f7" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.5"/>
+        </linearGradient>
+        <filter id="road-glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Glow layer -->
+      <path d="${d}" fill="none" stroke="url(#road-grad)" stroke-width="10"
+            stroke-linecap="round" stroke-linejoin="round" opacity="0.18" filter="url(#road-glow)"/>
+      <!-- Main road -->
+      <path d="${d}" fill="none" stroke="url(#road-grad)" stroke-width="3"
+            stroke-linecap="round" stroke-linejoin="round" opacity="0.85"
+            stroke-dasharray="8 5"/>
+    `;
+  }
+
+  // Draw after layout settles
+  setTimeout(drawRoad, 300);
+  window.addEventListener('resize', () => setTimeout(drawRoad, 100));
 
   // ── FORM SUBMISSION FEEDBACK ──
   const form = document.getElementById('contact-form');
