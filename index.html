@@ -1148,6 +1148,7 @@ footer em{
         <form action="https://formsubmit.co/bacc90415631fe37d5e254c757e5760a" method="POST">
           <input type="hidden" name="_subject" value="Portfolio — New Message from Contact Form">
           <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" id="form-next">
           <input type="hidden" name="_template" value="table">
           <input type="text" name="_honey" style="display:none">
           <div class="f-row">
@@ -1193,6 +1194,7 @@ footer em{
 const dot = document.getElementById('cursor-dot');
 const ring = document.getElementById('cursor-ring');
 let mx=0,my=0,rx=0,ry=0;
+document.getElementById('form-next').value = window.location.href;
 document.addEventListener('mousemove',e=>{
   mx=e.clientX; my=e.clientY;
   dot.style.left=mx+'px'; dot.style.top=my+'px';
